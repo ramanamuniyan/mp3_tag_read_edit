@@ -1,0 +1,96 @@
+MP3 Tag Reader and Editor - Documentation
+
+Overview
+--------
+This program allows users to view and edit ID3v2 tags of MP3 files. The supported tags include Title (TIT2), Artist (TPE1), Album (TALB), Year (TYER), Genre (TCON), and Comments (COMM). The program supports command-line operation with two modes: view (-v) and edit (-e).
+
+Files
+-----
+
+1. fun.h
+--------
+This header file declares the data structure and function prototypes used for reading and editing MP3 metadata tags.
+
+Structure: meta_data
+-------------------
+typedef struct {
+    char tag_name[5];    // 4-character tag identifier + null terminator
+    char tag_data;  // Buffer to hold the tag’s content (max 100 bytes)
+    unsigned int tag_size; // Size of the tag content
+} meta_data;
+
+Function Prototypes
+-------------------
+- int filecheck(char str[]): Checks if the filename represents a valid MP3 file.
+- void file_read(char* filename, meta_data *mdata): Reads metadata tags from the specified MP3 file into the mdata array.
+- void file_edit(char* filename, meta_data *mdata): Allows editing of specified metadata tags in the MP3 file.
+
+2. fun.c
+--------
+Contains the implementation of core functions for MP3 tag validation, reading, and editing.
+
+filecheck(char str[])
+--------------------
+- Verifies if a filename ends with ".mp3".
+- Returns 0 if valid, else 1.
+
+file_read(char* filename, meta_data *mdata)
+-------------------------------------------
+- Opens the MP3 file in binary read mode.
+- Checks for the presence of the ID3 tag header ("ID3").
+- Reads six predefined ID3v2 tag frames (TIT2, TPE1, TALB, TYER, TCON, COMM).
+- Extracts tag name, size, and content into the mdata array.
+- Closes the file upon completion.
+
+file_edit(char* filename, meta_data *mdata)
+-------------------------------------------
+- Displays a menu to select which tag to edit.
+- Takes user input for the new tag content.
+- Opens the file in binary read-write mode.
+- Modifies the specified tag's data and updates its size in the metadata.
+- Writes updated tags back to the file maintaining ID3v2 frame format.
+
+3. main.c
+---------
+Entry point of the program; manages user commands and calls respective functions.
+
+main(int argc, char **argv)
+---------------------------
+- Expects two command-line arguments: operation flag and filename.
+- Valid operation flags:
+  - -v: View MP3 tags
+  - -e: Edit MP3 tags
+- Validates filename via filecheck().
+- Reads the tags from the file using file_read().
+- Depending on the flag:
+  - For -v, prints the metadata tags read from the file.
+  - For -e, calls file_edit() to modify tag data.
+- Provides error messages for invalid commands or files.
+
+Usage
+-----
+
+Compile
+-------
+Use a C compiler, e.g.,
+gcc main.c fun.c -o mp3tageditor
+
+Run
+---
+To view tags:
+./mp3tageditor -v filename.mp3
+
+To edit tags:
+./mp3tageditor -e filename.mp3
+
+Limitations & Notes
+-------------------
+- The program assumes ID3v2 format with exactly six specific tags.
+- Tag contents are limited to 100 characters.
+- Only supports .mp3 files with proper ID3v2 headers.
+- The ID3v2 tag size and structure handling is basic and may cause corruption with non-standard or extended tags.
+- Updates tag sizes as big-endian 4-byte integers.
+- User input for editing is done via standard input.
+- The implementation is intended for educational and basic use; production use would require more robust handling.
+
+End of Documentation
