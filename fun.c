@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "fun.h"
 
 static long unsigned int n;
@@ -25,6 +26,14 @@ if(fptr == NULL)
 {
 perror("");
 return;
+}
+
+char buffer[4];
+fread(buffer,3,1,fptr);
+if(strcmp(buffer,"ID3")!=0)
+{
+  printf("version should be ID3\n");
+  exit(EXIT_FAILURE);
 }
 
 fseek(fptr,10,SEEK_SET);
@@ -59,19 +68,21 @@ fclose(fptr);
 }
 
 
-void file_edit(char* filename,meta_data *mdata,int edit_value,char *tag_content)
+void file_edit(char* filename,meta_data *mdata)
 {
 
 
 
-  // printf("Editing..\n");
-  // printf("1.TIT2\n");
-  // printf("2.TPE1\n");
-  // printf("3.TALB\n");
-  // printf("4.TYER\n");
-  // printf("5.TCON\n");
-  // printf("6.COMM\n");
-  // printf("Enter the choice : ");
+  printf("Editing..\n");
+  printf("1.Title\n");
+  printf("2.Artist\n");
+  printf("3.Album\n");
+  printf("4.Year\n");
+  printf("5.Genre\n");
+  printf("6.Comment\n");
+  printf("Enter the choice : ");
+  int edit_value;
+  scanf("%d",&edit_value);
   char tag[5];
 
   switch(edit_value)
@@ -103,16 +114,16 @@ void file_edit(char* filename,meta_data *mdata,int edit_value,char *tag_content)
     puts("Invalid");
 
   }
-  //char tag_content[100];
+  char tag_content[100];
   int tag_contentsize;
-//scanf(" %[^\n]",tag_content);
+scanf(" %[^\n]",tag_content);
 tag_contentsize=strlen(tag_content);
 
 
-FILE *fptr=fopen(filename,"rb");
-FILE *fptr1=fopen("new.mp3","wb");
+FILE *fptr1=fopen(filename,"rb+");
+//FILE *fptr1=fopen("new.mp3","wb");
 
-if(fptr == NULL || fptr1 ==NULL)
+if(fptr1 == NULL)
 {
 perror("");
 return;
@@ -129,8 +140,8 @@ for(int i=0;i<6;i++)
   }
 }
 char buf[1000];
-fread(buf,10,1,fptr);
-fwrite(buf,10,1,fptr1);
+// fread(buf,10,1,fptr);
+// fwrite(buf,10,1,fptr1);
 int arr[6];
 
 for(int i=0;i<6;i++)
@@ -143,7 +154,7 @@ for(int i=0;i<6;i++)
   
   mdata[i].tag_size=(__builtin_bswap32(++mdata[i].tag_size));
 } 
-
+fseek(fptr1,10,SEEK_SET);
 
 for(int i=0;i<6;i++)
 {
@@ -156,32 +167,21 @@ for(int i=0;i<6;i++)
 
 }
 
-fseek(fptr,n,SEEK_SET);
+//fseek(fptr,n,SEEK_SET);
 
- while(!feof(fptr))
- {
+//  while(!feof(fptr))
+//  {
 
- char bf;
-   fread(&bf,1,1,fptr);
-   fwrite(&bf,1,1,fptr1);
+//  char bf;
+//    fread(&bf,1,1,fptr);
+//    fwrite(&bf,1,1,fptr1);
 
- }
+//  }
 
 
 
-fclose(fptr);
+//fclose(fptr);
 fclose(fptr1);
-
-
-}
-
-void errorfun()
-{
-  
-  printf("To view : ./a.out -v <filename>\n");
-  printf("To edit : ./a.out -e <arg> <filename>\n");
-  printf("arg list : \n-t TITLE\n-a ALBUM\n-A ARTIST\n-y YEAR\n-c GENRE\n-C COMMENT\n");
-
 
 
 }
