@@ -83,6 +83,25 @@ To view tags:
 To edit tags:
 ./mp3tageditor -e filename.mp3
 
+Docker Support
+--------------
+
+You can also run this application using Docker.
+
+Build the Image:
+docker build -t mp3-tag-editor .
+
+Run the Application:
+To run the application, you need to mount the directory containing your MP3 files to the container so the application can access them.
+
+View Tags:
+docker run --rm -v "$(pwd):/usr/src/app" mp3-tag-editor ./mp3_edit.exe -v <filename.mp3>
+
+Edit Tags:
+docker run --rm -it -v "$(pwd):/usr/src/app" mp3-tag-editor ./mp3_edit.exe -e <filename.mp3>
+
+Note: The -it flag is required for editing to allow interactive input.
+
 Limitations & Notes
 -------------------
 - The program assumes ID3v2 format with exactly six specific tags.
